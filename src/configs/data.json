@@ -1,0 +1,161 @@
+{
+    "children": [
+        {
+            "name": "Margaret",
+            "gender": "Female",
+            "husband": "Arthur",
+            "children": [
+                {
+                    "name": "Bill",
+                    "father": "Arthur",
+                    "mother": "Margaret",
+                    "gender": "Male",
+                    "spouse": "Flora",
+                    "children": [
+                        {
+                            "name": "Victoire",
+                            "gender": "Female",
+                            "father": "Bill",
+                            "mother": "Flora",
+                            "husband": "Ted",
+                            "children": [
+                                {
+                                    "name": "Remus",
+                                    "gender": "Male",
+                                    "father": "Ted",
+                                    "mother": "Victoire"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Domninique",
+                            "gender": "Female",
+                            "father": "Bill",
+                            "mother": "Flora"
+                        },
+                        {
+                            "name": "Louis",
+                            "gender": "Male",
+                            "father": "Bill",
+                            "mother": "Flora"
+                        }
+                    ]
+                },
+                {
+                    "name": "Charlie",
+                    "gender": "Male",
+                    "father": "Arthur",
+                    "mother": "Margaret"
+                },
+                {
+                    "name": "Percy",
+                    "gender": "Male",
+                    "father": "Arthur",
+                    "mother": "Margaret",
+                    "spouse": "Audrey",
+                    "children": [
+                        {
+                            "name": "Molly",
+                            "gender": "Female",
+                            "father": "Percy",
+                            "mother": "Audrey"
+                        },
+                        {
+                            "name": "Lucy",
+                            "gender": "Female",
+                            "father": "Percy",
+                            "mother": "Audrey"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ronald",
+                    "gender": "Male",
+                    "father": "Arthur",
+                    "mother": "Margaret",
+                    "spouse": "Helen",
+                    "children": [
+                        {
+                            "name": "Rose",
+                            "gender": "Female",
+                            "husband": "Malloy",
+                            "father": "Ronald",
+                            "mother": "Helen",
+                            "children": [
+                                {
+                                    "name": "Draco",
+                                    "gender": "Male",
+                                    "father": "Malloy",
+                                    "mother": "Rose"
+                                },
+                                {
+                                    "name": "Aster",
+                                    "gender": "Female",
+                                    "father": "Malloy",
+                                    "mother": "Rose"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Hugo",
+                            "gender": "Male",
+                            "father": "Ronald",
+                            "mother": "Helen"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ginerva",
+                    "gender": "Female",
+                    "father": "Arthur",
+                    "mother": "Margaret",
+                    "husband": "Harry",
+                    "children": [
+                        {
+                            "name": "James",
+                            "gender": "Male",
+                            "spouse": "Darcy",
+                            "father": "Harry",
+                            "mother": "Ginerva",
+                            "children": [
+                                {
+                                    "name": "William",
+                                    "gender": "Male",
+                                    "father": "James",
+                                    "mother": "Darcy"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Albus",
+                            "gender": "Male",
+                            "spouse": "Alice",
+                            "father": "Harry",
+                            "mother": "Ginerva",
+                            "children": [
+                                {
+                                    "name": "Ron",
+                                    "gender": "Male",
+                                    "father": "Albus",
+                                    "mother": "Alice"
+                                },
+                                {
+                                    "name": "Ginny",
+                                    "gender": "Female",
+                                    "father": "Albus",
+                                    "mother": "Alice"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Lily",
+                            "gender": "Female",
+                            "father": "Harry",
+                            "mother": "Ginerva"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
