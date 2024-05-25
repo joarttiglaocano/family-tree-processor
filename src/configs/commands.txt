@@ -1,14 +1,3 @@
-ADD_CHILD Flora Ginerva Female
-GET_RELATIONSHIP Ginerva Siblings
-GET_RELATIONSHIP Louis Siblings
-GET_RELATIONSHIP William Siblings
-GET_RELATIONSHIP Ginny Siblings
-GET_RELATIONSHIP Lily Sister-In-Law
-GET_RELATIONSHIP Lily Brother-In-Law
-GET_RELATIONSHIP Remus Maternal-Aunt
-GET_RELATIONSHIP Ron Paternal-Uncle
-GET_RELATIONSHIP Hugo Brother-In-Law
-GET_RELATIONSHIP Ron Paternal-Aunt
-GET_RELATIONSHIP Arthur Son
-GET_RELATIONSHIP Margaret Daughter
-ADD_CHILD 
+ADD_CHILD Victoire Minerva Female
+ADD_CHILD Audrey Jak Male
+GET_RELATIONSHIP Jak Siblings

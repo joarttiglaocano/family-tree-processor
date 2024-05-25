@@ -1,189 +1,90 @@
 import _some from 'lodash/some'
-import { Gender, Parent, Relationship, Relatives } from '../enums'
-import { AddChildProps, GetRelativesProps, ParentType, Person } from '../types'
-import { Messages } from '../utils/messages'
+import _find from 'lodash/find'
+import _isEmpty from 'lodash/isEmpty'
+import { AddChildProps, Person } from '../types'
+import { Messages } from '../utils'
+import { Relationship } from '../enums'
+import RelationshipHandler from './RelationshipHandler'
 
 class Family {
-  members: Person[]
+    private members: Person[]
+    relationshipHandler: RelationshipHandler
 
-  constructor(members: Person[]) {
-    this.members = members
-  }
+    constructor(members: Person[]) {
+        this.members = members
+        this.relationshipHandler = new RelationshipHandler(this)
+    }
 
-  addMember(person: Person) {
-    this.members.push(person)
-  }
+    // note: for now updating of family is based only on adding a child from mother within the family update if necessary
+    private updateFamily(mother: Person, child: Person) {
+        mother?.children?.push(child)
+    }
 
-  findMember(name: string, members: Person[] = this.members): Person | undefined {
-    for (const person of members) {
-      // Use lodash's _.some function to check if any of the person's properties match the name
-      if (_some(person, (v) => v === name)) {
-        return person
-      }
+    /**
+     * Finds a member in the family tree based on the specified name.
+     * @param name - The name of the member to find.
+     * @param members - The list of family members to search within.
+     * @param keysToCheck - The keys of the member object to check for name matching.
+     * @returns The matching member object if found, otherwise undefined.
+     */
+    findMember(
+        name: string,
+        members: Person[] = this.members,
+        keysToCheck: string[] = ['name', 'husband', 'spouse']
+    ): Person | undefined {
+        for (const person of members) {
+            // Use lodash's _.some function to check if any of the person's properties match the name
+            if (_some(keysToCheck, (key) => person[key as keyof Person] === name)) {
+                return person
+            }
 
-      // If the person has children, recursively call findMember on the children
-      // to find the person
-      if (person.children) {
-        const result = this.findMember(name, person.children)
-        if (result) {
-          return result
+            // If the person has children, recursively call findMember on the children until member is found
+            if (person.children) {
+                const result = this.findMember(name, person.children)
+                if (result) {
+                    return result
+                }
+            }
         }
-      }
     }
 
-    return undefined
-  }
+    /**
+     * Adds a child to the family.
+     *
+     * @param motherName - The name of the mother.
+     * @param childName - The name of the child to be added.
+     * @param gender - The gender of the child.
+     * @returns The updated Family object if the child was successfully added, or an error message if the mother is not a member of the family.
+     */
+    addChild({ motherName, childName, gender }: AddChildProps): string {
+        // Find the mother
+        const mother: Person | string = this.relationshipHandler.findMother(motherName)
 
-  /**
-   * Adds a child to the family.
-   *
-   * @param motherName - The name of the mother.
-   * @param fatherName - The name of the father.
-   * @param childName - The name of the child to be added.
-   * @param gender - The gender of the child.
-   * @returns The updated Family object if the child was successfully added, or an error message if the mother is not a member of the family.
-   */
-  addChild({ motherName, fatherName, childName, gender }: AddChildProps): Family | string {
-    // Check if the mother is a member of the family
-    const isFamilyMember = this.findMember(motherName)
+        // Should check if its mother and type of person, if not no need to proceed process
+        if (mother && typeof mother !== 'object') {
+            return mother as string
+        }
 
-    // If the mother is not a member of the family, return an error message
-    if (!isFamilyMember) {
-      return Messages.PERSON_NOT_FOUND
+        // Once the mother was found create the child object
+        const child: Person = {
+            name: childName,
+            gender,
+            mother: motherName,
+            children: []
+        }
+
+        this.updateFamily(mother as Person, child)
+
+        return Messages.CHILD_ADDED
     }
 
-    // Create a new child object
-    const child = {
-      name: childName,
-      gender,
-      mother: motherName,
-      father: fatherName,
-      children: []
+    getFamilyMembers() {
+        return this.members
     }
 
-    // Add the child to the family
-    this.addMember(child)
-
-    // Return the updated Family object
-    return this
-  }
-
-  // Get the names of people who have the specified relationship with the person
-  getRelationshipNames(person: Person, relationshipFunction: (person: Person) => Person[]): string[] {
-    return relationshipFunction(person).map((relative) => relative.name)
-  }
-
-  /**
-   * Gets the relationship of a person in the family.
-   *
-   * @param name - The name of the person.
-   * @param relationship - The type of relationship to find.
-   * @returns An array of names of people who have the specified relationship with the person, or an error message if the person is not found or the relationship is not handled.
-   */
-  getRelationship(name: string, relationship: Relationship): string[] | string {
-    const person = this.findMember(name)
-    if (!person) {
-      return Messages.PERSON_NOT_FOUND
+    getRelationship(name: string, relationship: Relationship): string[] | string {
+        return this.relationshipHandler.findRelationship(name, relationship)
     }
-
-    // Get the function for the specified relationship
-    const relationshipFunctions: Record<Relationship, (person: Person) => Person[]> = {
-      [Relationship.Siblings]: (person: Person) =>
-        this.getSiblings(person['mother'] as unknown as Person).filter((child) => child.name !== person.name), // TODO: improve typings
-      [Relationship.SisterInLaw]: (person: Person) => this.getInLaws(person, Gender.Male),
-      [Relationship.BrotherInLaw]: (person: Person) => this.getInLaws(person, Gender.Female),
-      [Relationship.PaternalUncle]: (person: Person) =>
-        this.getRelatives({ person, relative: Relatives.Uncle, parent: Parent.Father }),
-      [Relationship.PaternalAunt]: (person: Person) =>
-        this.getRelatives({ person, relative: Relatives.Aunt, parent: Parent.Father }),
-      [Relationship.MaternalUncle]: (person: Person) =>
-        this.getRelatives({ person, relative: Relatives.Uncle, parent: Parent.Mother }),
-      [Relationship.MaternalAunt]: (person: Person) =>
-        this.getRelatives({ person, relative: Relatives.Aunt, parent: Parent.Mother }),
-      [Relationship.Son]: this.getSons,
-      [Relationship.Daughter]: this.getDaughters
-    }
-
-    const relationshipFunction = relationshipFunctions[relationship]
-    if (!relationshipFunction) {
-      return Messages.RELATIONSHIP_NOT_HANDLED
-    }
-
-    return this.getRelationshipNames(person, relationshipFunction)
-  }
-
-  getSiblings(person: Person): Person[] {
-    const member = this.findMember(person as unknown as string) // TODO: improve typings
-    const siblings = member?.children?.filter((child) => child.name !== person.name)
-    return siblings || []
-  }
-
-  getInLaws(person: Person, gender: Gender = Gender.Male, parent: ParentType = Parent.Mother): Person[] {
-    let inLaws: Person[] = []
-
-    const siblings: Person[] = this.getSiblings(person[parent] as unknown as Person)
-
-    siblings.forEach((sibling: Person) => {
-      if (sibling.gender === gender && (sibling.spouse || sibling.husband)) {
-        inLaws.push({
-          ...sibling,
-          name: (sibling.spouse as unknown as string) || (sibling.husband as unknown as string)
-        })
-      }
-    })
-
-    return inLaws
-  }
-
-  getSisterInLaws(person: Person): Person[] {
-    const siblingsWives = this.getInLaws(person, Gender.Male, Parent.Mother)
-    // TODO  find  spouse’s sisters and merge to sibling’s wives
-    const spouseSisters = [] as Person[]
-    return [...siblingsWives, ...spouseSisters]
-  }
-
-  getBrotherInLaws(person: Person): Person[] {
-    const siblingsHusband = this.getInLaws(person, Gender.Female, Parent.Father)
-    // TODO  find  spouse’s brother and merge to sibling’s husband
-    const spouseBrother = [] as Person[]
-    return [...siblingsHusband, ...spouseBrother]
-  }
-
-  getRelatives({ person, relative, parent }: GetRelativesProps): Person[] {
-    if (!person[parent]) {
-      return []
-    }
-
-    // find the parent of the person first
-    const personParent = this.findMember(person[parent] as unknown as string) as Person
-
-    // remove the person parent from the list of siblings
-    const parentSiblings = this.getSiblings(personParent[parent] as unknown as Person).filter(
-      (sibling) => sibling.name !== (person[parent] as unknown as string)
-    )
-
-    // filter based on relation
-    const relatives = parentSiblings.filter(
-      (sibling) => sibling.gender === (relative === Relatives.Aunt ? Gender.Female : Gender.Male)
-    )
-    return relatives
-  }
-
-  getSons(person: Person): Person[] {
-    if (!person.children) {
-      return []
-    }
-
-    return person.children.filter((child) => child.gender === Gender.Male)
-  }
-
-  getDaughters(person: Person): Person[] {
-    if (!person.children) {
-      return []
-    }
-
-    return person.children.filter((child) => child.gender === Gender.Female)
-  }
 }
 
 export default Family

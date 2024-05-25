@@ -1,31 +1,37 @@
 # Family Tree Processor
 
-Insructions to run the project
+## Introduction
 
-## Installations
+This project is a Family Tree Processor, which helps manage and process family tree data.
+
+## Installation
 
 Follow these steps to install and run the project:
 
-1. **Clone the repository**
+1. **Clone the Repository**
 
-2. \*\*Run the following command in your terminal to clone the repository:
+    Run the following command in your terminal to clone the repository:
 
-   ```bash
-   git clone https://github.com/username/repository.git
-   ```
+    ```bash
 
-3. Navigate to the project directory
+    git clone git@github.com:joarttiglaocano/family-tree-processor.git
 
-   ```bash
-   cd repository
-   ```
+    ```
 
-4. Install the dependencies
+2. Navigate to the project directory
+
+    ```bash
+
+    cd family-tree-processor
+
+    ```
+
+3. Install the dependencies
    If you're using npm as your package manager, run:
 
-   ```bash
-   npm install
-   ```
+    ```bash
+    npm install
+    ```
 
 ## Building the project
 
